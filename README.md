@@ -9,6 +9,7 @@ A Chrome Extension that classifies job listings on [Seek](https://www.seek.com.a
 - 🟠 **Public Service** — Orange badge for employers classified as Public Service (e.g. government departments).
 - ⬜ **Private / Unlisted** — Grey badge for employers not found in the spreadsheet.
 - 🔀 **Filter Toggles** — Two toggle switches let you instantly hide jobs that don't match your preferred category. Toggle "Show Public Sector only", "Show Public Service only", or both at once.
+- 🚀 **Scan All Pages (Careers Vic)** — A special feature exclusive to Careers Vic that automatically aggregates jobs across all pages of a search result into a single, clean summary page containing only matching public sector/service roles.
 - 🔍 **Fuzzy Matching** — Intelligently matches employer names even when the website uses abbreviations or omits suffixes like "Pty Ltd" or "Corporation".
 - 🌐 **Multi-site Support** — Works on `seek.com.au`, `seek.co.nz`, `seek.com`, and `careers.vic.gov.au`.
 
@@ -45,6 +46,16 @@ Two toggle switches appear at the top of the search results (or as a floating pa
 | **Both toggled off** | Shows all jobs (default). |
 
 Your toggle preferences are saved securely within the extension and persist across page reloads and browser sessions.
+
+### Scanning All Pages (Careers Vic only)
+
+When performing a search on [Careers Vic](https://www.careers.vic.gov.au/jobs), you will see an additional **"🔍 Scan All Pages"** button beneath your filter toggles.
+
+1. Ensure your filter toggles are set to your preference (e.g., check "Show Public Sector only" if you only want Sector jobs).
+2. Click the **"🔍 Scan All Pages"** button.
+3. A progress bar will appear as the extension automatically pages through every single search result in the background. It uses a polite delay so it won't overwhelm the website.
+4. Once completed, a new tab will open containing a clean, unified list of every matching job across all pages.
+5. And yes, there's confetti to celebrate your newly optimized job hunt! 🎉
 
 ### Updating the Extension
 
@@ -125,6 +136,14 @@ Filtering uses pure CSS via the `:has()` pseudo-class rather than JavaScript DOM
 - **Performance** — The browser's CSS engine handles show/hide natively without any JavaScript overhead.
 
 The body element receives a class (e.g. `seek-classifier-only-sector`) and CSS rules like `body.seek-classifier-only-sector article:not(:has(.seek-employer-badge-sector))` hide non-matching cards.
+
+### Scan All Pages Architecture
+
+The "Scan All Pages" feature for Careers Vic operates by intercepting the current search URL, removing the pagination parameter, and sequentially fetching all pages via the background `fetch()` API.
+
+A custom regex-based HTML parser is used to extract the jobs (`parseJobsFromHtml`). This approach was chosen over the browser's native `DOMParser` due to the complexity of the Vue.js/Drupal DOM structure on Careers Vic, which caused the native parser to silently fail on raw `fetch` responses.
+
+The aggregated results are generated as a standalone HTML document and opened in a new tab via a Blob URL. The user's active filter toggles are explicitly fetched from `chrome.storage.local` prior to the scan to ensure the results page only contains relevant jobs.
 
 ### Security Considerations
 
