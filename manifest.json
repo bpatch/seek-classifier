@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Seek Employer Classifier",
+  "version": "1.0",
+  "description": "Flags job listings from specific employers on Seek.",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.seek.com.au/*",
+        "*://seek.com.au/*",
+        "*://*.seek.co.nz/*",
+        "*://seek.co.nz/*",
+        "*://*.seek.com/*",
+        "*://*.careers.vic.gov.au/*",
+        "*://careers.vic.gov.au/*"
+      ],
+      "css": ["content/styles.css"],
+      "js": ["content/seek_flag.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["data/employers.json"],
+      "matches": [
+        "*://*.seek.com.au/*",
+        "*://seek.com.au/*",
+        "*://*.seek.co.nz/*",
+        "*://seek.co.nz/*",
+        "*://*.seek.com/*",
+        "*://*.careers.vic.gov.au/*",
+        "*://careers.vic.gov.au/*"
+      ]
+    }
+  ]
+}
